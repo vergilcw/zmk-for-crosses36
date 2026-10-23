@@ -1,7 +1,7 @@
 # Plan — Crosses 36 (3x6 single trackball) firmware
 
 Handoff plan written 2026-10-22 from the daily-driver session
-(`vergilcw/zmk-for-crosses35-dual`). Status legend: `[x]` done, `[ ]` todo, `[~]` in progress.
+(`vergilcw/zmk-for-crosses35-dual`). Status legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[-]` skipped.
 
 ## Goal
 
@@ -91,29 +91,31 @@ git commit -m "Add agent instructions and plan"
 
 ## Phase 1 — Confirm the device runs this firmware & back it up (read-only)
 
-- [ ] Add a `.gitignore` (`.cache/`, `__pycache__/`, `.venv/`, `*.uf2`).
-- [ ] Copy the Studio tools from the sister repo (local checkout, absolute path):
+- [x] Add a `.gitignore` (`.cache/`, `__pycache__/`, `.venv/`, `*.uf2`).
+- [ ] *Deferred to Phase 6 (only needed for the post-flash re-dump).* Copy the Studio tools from the sister repo (local checkout, absolute path):
       `cp /home/vergilcw/zmk-for-crosses35-dual/scripts/studio_dump.py scripts/`
       (also `studio_to_keymap.py` if wanted — note it currently assumes 36 keys/rows of 10; it would need
       its `rows`/grid logic generalised to 12-column rows + 6 thumbs to print this board's layers).
-- [ ] Ask the user to plug in the **right** half over USB. Expect
+- [x] Ask the user to plug in the **right** half over USB. Expect
       `/dev/serial/by-id/usb-ZMK_Project_Crosses_36_*` (name from `config/crosses.conf`). If the name
       differs, stop and report — the board may be running different firmware.
-- [ ] Ask the user to press Studio unlock on the **stock** keymap: hold `Z` or `/` (Mouse layer) and
+      (2026-10-23: `usb-ZMK_Project_Crosses_36_*` → `/dev/ttyACM0`, the only ZMK device attached.)
+- [-] *Skipped (2026-10-23): user confirmed the board is factory-stock with no Studio edits; no backup wanted.* Ask the user to press Studio unlock on the **stock** keymap: hold `Z` or `/` (Mouse layer) and
       press the `N` key position (pos 30).
-- [ ] Dump: `env UV_PYTHON_DOWNLOADS=never uv run scripts/studio_dump.py /dev/ttyACM0 > docs/studio-snapshots/2026-MM-DD-stock.json`
+- [-] *Skipped (see above).* Dump: `env UV_PYTHON_DOWNLOADS=never uv run scripts/studio_dump.py /dev/ttyACM0 > docs/studio-snapshots/2026-MM-DD-stock.json`
       (the script omits the serial). Confirm: 4 layers, ≥42 bindings per layer, physical layout
       `crosses`, and bindings matching upstream `config/crosses.keymap`. If they don't match, the user
       has Studio edits on the board — record them in the knowledge base before continuing.
-- [ ] Check which `ttyACM` is which: the daily driver (`Crosses BT`) may also be plugged in. Never talk
+- [x] Check which `ttyACM` is which: the daily driver (`Crosses BT`) may also be plugged in. Never talk
       to `Crosses BT` from this repo.
 
 ## Phase 2 — Keymap
 
-- [ ] Replace `config/crosses.keymap` with **Appendix A** verbatim (already validated with keymap-drawer:
+- [x] Replace `config/crosses.keymap` with **Appendix A** verbatim (already validated with keymap-drawer:
       42 bindings on each of the 4 layers, layout renders correctly against `config/crosses.json`).
-- [ ] Diff the inner block against the sister repo's `config/crosses.keymap` to confirm parity
+- [x] Diff the inner block against the sister repo's `config/crosses.keymap` to confirm parity
       (inner pos `12*r + c + 1` here == pos `10*r + c` there; thumbs 36–41 == 30–35).
+      (2026-10-23: all 4 layers match binding-for-binding; combo `<0 1>` → `<1 2>`; keymap-drawer parses it.)
 
 ## Phase 3 — Trackball scroll layers
 
