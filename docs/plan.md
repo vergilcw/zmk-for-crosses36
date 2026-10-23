@@ -132,21 +132,23 @@ git commit -m "Add agent instructions and plan"
 
 ## Phase 4 — Docs, images, build matrix
 
-- [ ] Port the improved `keymap_drawer.config.yaml` from the sister repo (copy the file; it adds
+- [x] Port the improved `keymap_drawer.config.yaml` from the sister repo (copy the file; it adds
       shifted-symbol legends, media/brightness glyphs, text `⇧` modifier). Ensure `UNDER: _` and
       `GRAVE: '`'` mappings exist (they do in that file).
-- [ ] Optional: add `artifact-name: crosses_36_left` / `crosses_36_right` to `build.yaml` entries.
-- [ ] Local render (optional; CI also renders to `img/`):
+- [x] Optional: add `artifact-name: crosses_36_left` / `crosses_36_right` to `build.yaml` entries.
+- [x] Local render (optional; CI also renders to `img/`):
       `keymap -c keymap_drawer.config.yaml parse -z config/crosses.keymap > img/crosses.yaml` then
       `keymap -c keymap_drawer.config.yaml draw img/crosses.yaml -j config/crosses.json > img/crosses.svg`.
       Glyphs: `raw.githubusercontent.com` is blocked; seed
       `<repo>/.cache/keymap-drawer/glyphs/mdi:<name>.svg` via
       `gh api repos/Templarian/MaterialDesign-SVG/contents/svg/<name>.svg --jq .content | base64 -d`
       and run only the `keymap` binary with `XDG_CACHE_HOME=<repo>/.cache`.
-- [ ] README: replace upstream text with a short description of this keyboard, the keymap image,
+- [x] README: replace upstream text with a short description of this keyboard, the keymap image,
       the outer-column additions, the scroll layers, flashing steps, and credits (HeeTuic, GGGW,
       DoctorWangWang, caksoylar, ZMK). Point badges at `vergilcw/zmk-for-crosses36` branch `36`.
-- [ ] Create `docs/knowledge-base.md` with the verified findings from this plan + anything new.
+- [x] Create `docs/knowledge-base.md` with the verified findings from this plan + anything new.
+      (2026-10-23: also removed upstream `README_ZH.md`, which described HeeTuic's stock firmware;
+      glyphs seeded by copying the sister repo's `.cache/keymap-drawer/glyphs/`.)
 
 ## Phase 5 — Build (needs push approval)
 
