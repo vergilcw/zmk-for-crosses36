@@ -1,0 +1,8 @@
+# Makes this repo a Zephyr module so the ZMK build loads the in-repo PMW3610 driver
+# (modules/zmk-pmw3610-driver) via -DZMK_EXTRA_MODULES.
+name: crosses36-pmw3610
+build:
+  cmake: modules/zmk-pmw3610-driver
+  kconfig: modules/zmk-pmw3610-driver/Kconfig
+  settings:
+    dts_root: modules/zmk-pmw3610-driver
