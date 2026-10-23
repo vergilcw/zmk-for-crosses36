@@ -16,7 +16,7 @@ Make the secondary keyboard (Crosses 3x6+3, single trackball on the right half) 
    | Left pinky middle (pos 12) | Escape | `&kp ESC` |
    | Left pinky bottom (pos 24) | Alt | `&kp LALT` |
    | Right pinky top (pos 11) | underscore | `&kp UNDER` |
-   | Right pinky middle (pos 23) | semicolon | `&kp SEMI` |
+   | Right pinky middle (pos 23) | quote | `&kp SQT` (swapped with `;`, see D8) |
    | Right pinky bottom (pos 35) | Alt | `&kp LALT` (see decision D2) |
 
 2. **Trackball behaviour by layer:** normal pointer on Base, **vertical-only scroll while Lower is
@@ -60,12 +60,13 @@ Out of scope for this task: mod-tap/hold-tap tuning, connectivity work, anything
   layer-taps feel identical to the daily driver (which uses stock `&lt`). Typing tuning is a later,
   shared task for both keyboards.
 - **D4 — Keep driver sniper on the Mouse layer** (`snipe-layers = <3>`, upstream default).
-- **D5 — Keep the Q+W → Esc combo** (positions `<1 2>` on this board) for parity, even though Esc now
-  also has a dedicated key.
+- **D5 — ~~Keep the Q+W → Esc combo~~ Dropped** (user, 2026-10-23): Esc has a dedicated key now.
 - **D6 — Drop the unused `&as` (auto_shift) hold-tap** from the daily-driver keymap; nothing binds it.
 - **D7 — Scroll implemented with ZMK input-listener layer overrides**, not the driver's
   `scroll-layers` (which can't lock an axis). Fallback if overrides misbehave: driver `scroll-layers`
   for free 2-axis scroll on Lower/Raise.
+- **D8 — `;` on the home row (pos 22), `'` on the outer column (pos 23)** (user, 2026-10-23).
+  Deliberate deviation from the daily driver, which has `'` at that home-row position.
 
 ## Inbox
 
@@ -115,7 +116,8 @@ git commit -m "Add agent instructions and plan"
       42 bindings on each of the 4 layers, layout renders correctly against `config/crosses.json`).
 - [x] Diff the inner block against the sister repo's `config/crosses.keymap` to confirm parity
       (inner pos `12*r + c + 1` here == pos `10*r + c` there; thumbs 36–41 == 30–35).
-      (2026-10-23: all 4 layers match binding-for-binding; combo `<0 1>` → `<1 2>`; keymap-drawer parses it.)
+      (2026-10-23: all 4 layers match binding-for-binding; keymap-drawer parses it. Later the same day
+      the user swapped `;`/`'` (D8) and dropped the combo (D5) — the only intended differences.)
 
 ## Phase 3 — Trackball scroll layers
 
@@ -175,8 +177,9 @@ git commit -m "Add agent instructions and plan"
  * Crosses 36 (3x6, single right trackball) keymap.
  *
  * Inner 3x5+3 block mirrors vergilcw/zmk-for-crosses35-dual config/crosses.keymap
- * (exported from ZMK Studio 2026-10-10). Outer pinky columns are new:
- *   Base L: ` ~ / Esc / Alt    Base R: _ / ; / Alt    other layers: &trans
+ * (exported from ZMK Studio 2026-10-10), except: ; is on the home row and ' moves
+ * to the outer column, and the Q+W -> Esc combo is dropped. Outer pinky columns are new:
+ *   Base L: ` ~ / Esc / Alt    Base R: _ / ' / Alt    other layers: &trans
  * Trackball: vertical-only scroll on Lower, horizontal-only scroll on Raise
  * (input-listener layer overrides in boards/shields/crosses/crosses_right.overlay).
  */
@@ -193,15 +196,6 @@ git commit -m "Add agent instructions and plan"
 #define MOUSE 3
 
 / {
-    combos {
-        compatible = "zmk,combos";
-
-        esc {
-            bindings = <&kp ESCAPE>;
-            key-positions = <1 2>;
-        };
-    };
-
     keymap {
         compatible = "zmk,keymap";
 
@@ -209,7 +203,7 @@ git commit -m "Add agent instructions and plan"
             display-name = "Base";
             bindings = <
 &kp GRAVE  &kp Q       &kp W        &kp E  &kp R  &kp T    &kp Y  &kp U        &kp I      &kp O          &kp P          &kp UNDER
-&kp ESC    &kp A       &kp S        &kp D  &kp F  &kp G    &kp H  &kp J        &kp K      &kp L          &kp SQT        &kp SEMI
+&kp ESC    &kp A       &kp S        &kp D  &kp F  &kp G    &kp H  &kp J        &kp K      &kp L          &kp SEMI       &kp SQT
 &kp LALT   &mt LALT Z  &mt LSHFT X  &kp C  &kp V  &kp B    &kp N  &lt LOWER M  &kp COMMA  &mt LSHFT DOT  &mt RALT FSLH  &kp LALT
                          &lt MOUSE TAB  &mt LSHFT BSPC  &lt LOWER ESC    &mt LCTRL RET  &lt RAISE SPACE  &kp LGUI
             >;
@@ -299,14 +293,14 @@ Notes:
 ## Appendix C — Test checklist (with the user)
 
 - [ ] Both halves connect; ZMK Studio connects to the right half; Studio unlock works (Mouse layer, N).
-- [ ] Base outer keys: `` ` `` / `~` (with Shift), Esc, left Alt, `_`, `;`, right Alt (Alt-Tab works).
+- [ ] Base outer keys: `` ` `` / `~` (with Shift), Esc, left Alt, `_`, `'` / `"`, right Alt (Alt-Tab works).
 - [ ] Inner block behaves exactly like the daily driver (spot-check each layer against the image).
 - [ ] Base: pointer moves normally, same speed/orientation as before flashing.
 - [ ] Hold Lower: ball scrolls **only vertically**; diagonal rolls don't scroll sideways.
 - [ ] Hold Raise: ball scrolls **only horizontally** (test in a wide spreadsheet / browser page).
 - [ ] Scroll direction matches the user's preference on both axes; speed comfortable.
 - [ ] Hold Mouse: sniper (slow pointer) still works; mouse buttons work.
-- [ ] Q+W combo still sends Esc; fast typing of `qw…` words isn't disrupted.
+- [ ] `;` is on the right home row (pinky), `'` / `"` on the outer column next to it.
 
 ## Appendix D — Tuning knobs
 
