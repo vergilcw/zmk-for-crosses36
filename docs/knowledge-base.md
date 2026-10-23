@@ -53,7 +53,8 @@ Newest entries go at the top of each section.
 - Driver scroll mode reads with divisor 1 and tick 24; pointer mode divides by `CPI_DIVIDOR` (4). In pointer
   mode one wheel step ≈ 24/4 = 6 counts → `zip_scroll_scaler 1 6`.
 - Implemented 2026-10-23 in `crosses_right.overlay` (`lower_vscroll` on layer 1, `raise_hscroll` on layer 2).
-  *Not yet compiled or tested on hardware.*
+  Compiles: CI run `39998744897` (2026-10-23) is green, and the right half's final devicetree (printed in the
+  build log) contains both override nodes with the expected `input-processors`. *Not yet tested on hardware.*
 
 ## Decisions
 

@@ -152,11 +152,13 @@ git commit -m "Add agent instructions and plan"
 
 ## Phase 5 — Build (needs push approval)
 
-- [ ] Ask the user, then push to `origin 36`. Watch `gh run list -R vergilcw/zmk-for-crosses36 -b 36`.
-- [ ] Build must be green for left, right (Studio) and settings_reset. If DT errors mention the
+- [x] Ask the user, then push to `origin 36`. Watch `gh run list -R vergilcw/zmk-for-crosses36 -b 36`.
+- [x] Build must be green for left, right (Studio) and settings_reset. If DT errors mention the
       processors, check the includes in Appendix B and that node/property names match v0.3
       (`input-processors`, `layers`, `process-next`).
-- [ ] Draw workflow commits a fresh `img/crosses.svg`; eyeball it in a browser.
+      (2026-10-23: run `39998744897` green on all three; the right half's devicetree in the build log
+      contains `lower_vscroll` / `raise_hscroll` with the expected processor chains.)
+- [~] Draw workflow commits a fresh `img/crosses.svg` (done: `b756923`); user to eyeball it in a browser.
 
 ## Phase 6 — Flash (needs explicit approval; this is the secondary keyboard)
 
