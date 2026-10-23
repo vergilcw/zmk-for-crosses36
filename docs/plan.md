@@ -54,7 +54,7 @@ Out of scope for this task: mod-tap/hold-tap tuning, connectivity work, anything
 ## Decisions (confirm with the user if they object)
 
 - **D1 — Outer columns on non-Base layers are `&trans`.** Esc/Alt/`/_/; stay reachable on every layer.
-- **D2 — Both bottom-pinky Alts are `LALT`.** `RALT` acts as AltGr in many layouts; Base already has a
+- **D2 — Both bottom-pinky Alts are `LALT`** (confirmed by user 2026-10-22). `RALT` acts as AltGr in many layouts; Base already has a
   `RALT` mod-tap on `/` if a right Alt is ever needed. Ask the user if they want `RALT` instead.
 - **D3 — Drop upstream's global `&lt` override** (`tapping-term 200, balanced, quick-tap 150`) so
   layer-taps feel identical to the daily driver (which uses stock `&lt`). Typing tuning is a later,
