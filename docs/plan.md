@@ -162,13 +162,15 @@ git commit -m "Add agent instructions and plan"
 
 ## Phase 6 — Flash (needs explicit approval; this is the secondary keyboard)
 
-- [ ] `gh run download -R vergilcw/zmk-for-crosses36 -D /tmp/crosses36-fw`
-- [ ] Right half: plug in, double-tap reset, copy the right `.uf2` to `/run/media/$USER/NICENANO/`.
+- [x] `gh run download -R vergilcw/zmk-for-crosses36 -D /tmp/crosses36-fw`
+- [x] Right half: plug in, double-tap reset, copy the right `.uf2` to `/run/media/$USER/NICENANO/`.
       Then the left half. (Both halves: the keymap lives on the right, but flashing both keeps
       them on the same build.)
-- [ ] If Phase 1 found Studio edits, run *Restore Stock Settings* in ZMK Studio.
+      (2026-10-23: both halves flashed from run `39998744897`. Right half re-enumerated as
+      `ZMK_Project_Crosses_36`; left half (peripheral) has no USB serial, as expected.)
+- [-] *Not needed: board was factory-stock.* If Phase 1 found Studio edits, run *Restore Stock Settings* in ZMK Studio.
       Do **not** flash `settings_reset` unless pairing breaks (it wipes BLE bonds).
-- [ ] Re-dump with `studio_dump.py` and confirm the device keymap == Appendix A.
+- [-] *Skipped (no Studio tools in this repo); verify by testing instead (Phase 7).* Re-dump with `studio_dump.py` and confirm the device keymap == Appendix A.
 
 ## Phase 7 — Test & tune with the user (Appendix C checklist, Appendix D knobs)
 
