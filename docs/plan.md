@@ -121,11 +121,14 @@ git commit -m "Add agent instructions and plan"
 
 ## Phase 3 — Trackball scroll layers
 
-- [ ] Edit `config/boards/shields/crosses/crosses_right.overlay` per **Appendix B**: add the two includes
+- [x] Edit `config/boards/shields/crosses/crosses_right.overlay` per **Appendix B**: add the two includes
       and the `lower_vscroll` / `raise_hscroll` child nodes inside the existing `trackball_listener`.
       Leave the driver's `scroll-layers` commented out (it would pre-empt our overrides by emitting
       WHEEL/HWHEEL itself on those layers).
-- [ ] Don't change `crosses_right.conf` yet; tune only after hardware testing (Appendix D).
+      (2026-10-23: re-verified against ZMK `v0.3` source — `input/processors.dtsi`, processor labels,
+      `input_transform.h`, listener child-binding `layers`/`process-next`/`input-processors` — and the
+      driver @`1d9c2c6` sign/divisor logic. Not compiled yet; CI is the first build.)
+- [x] Don't change `crosses_right.conf` yet; tune only after hardware testing (Appendix D).
 
 ## Phase 4 — Docs, images, build matrix
 

@@ -5,6 +5,8 @@
  */
  
 #include "crosses.dtsi"
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
 
 &default_transform {
     col-offset = <6>;
@@ -71,6 +73,24 @@
     trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
+
+        /* Lower (layer 1): vertical-only scroll. Zero X, map Y->WHEEL, invert to match the
+         * driver's native scroll direction, then ~ driver speed (tick 24 / CPI divisor 4). */
+        lower_vscroll {
+            layers = <1>;
+            input-processors = <&zip_x_scaler 0 1>,
+                               <&zip_xy_to_scroll_mapper>,
+                               <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>,
+                               <&zip_scroll_scaler 1 6>;
+        };
+
+        /* Raise (layer 2): horizontal-only scroll. Zero Y, map X->HWHEEL. */
+        raise_hscroll {
+            layers = <2>;
+            input-processors = <&zip_y_scaler 0 1>,
+                               <&zip_xy_to_scroll_mapper>,
+                               <&zip_scroll_scaler 1 6>;
+        };
     };
 };
 
