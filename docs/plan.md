@@ -152,7 +152,8 @@ git commit -m "Add agent instructions and plan"
 - [x] Push (ask), CI green: run `40051120233`; log shows `pmw3610.c` built from the in-repo module
       (`modules/crosses36-pmw3610`), `CONFIG_PMW3610_ROTATION_DEG=-45`, `scroll-layers = <1>`, `snipe-layers = <2>`.
 - [x] Flash right half only (2026-10-24: `crosses_36_right.uf2` from run `40051120233`; re-enumerated as `ZMK_Project_Crosses_36`).
-- [ ] Test with the user (Appendix C).
+- [x] Test with the user (Appendix C). 2026-10-24: user reported "things are looking good" after flashing
+      (overall confirmation, not item by item).
 
 ## Phase 4 — Docs, images, build matrix
 
@@ -182,7 +183,7 @@ git commit -m "Add agent instructions and plan"
       (`input-processors`, `layers`, `process-next`).
       (2026-10-23: run `39998744897` green on all three; the right half's devicetree in the build log
       contains `lower_vscroll` / `raise_hscroll` with the expected processor chains.)
-- [~] Draw workflow commits a fresh `img/crosses.svg` (done: `b756923`); user to eyeball it in a browser.
+- [x] Draw workflow commits a fresh `img/crosses.svg` (done: `b756923`); user eyeballed it.
 
 ## Phase 6 — Flash (needs explicit approval; this is the secondary keyboard)
 
@@ -198,8 +199,10 @@ git commit -m "Add agent instructions and plan"
 
 ## Phase 7 — Test & tune with the user (Appendix C checklist, Appendix D knobs)
 
-- [ ] Walk the user through the checklist; adjust scroll speed/direction; one change per build.
-- [ ] Record final values + rationale in the knowledge base; check off this plan.
+- [x] Walk the user through the checklist; no tuning was needed (defaults kept: rotation -45, `SCROLL_TICK=24`).
+- [x] Record final values + rationale in the knowledge base; check off this plan.
+
+**Status (2026-10-24): complete.** Next: replay the same changes on the daily driver (separate repo/session).
 
 ---
 
@@ -213,8 +216,8 @@ git commit -m "Add agent instructions and plan"
  * (exported from ZMK Studio 2026-10-10), except: ; is on the home row and ' moves
  * to the outer column, and the Q+W -> Esc combo is dropped. Outer pinky columns are new:
  *   Base L: ` ~ / Esc / Alt    Base R: _ / ' / Alt    other layers: &trans
- * Trackball: vertical-only scroll on Lower, horizontal-only scroll on Raise
- * (input-listener layer overrides in boards/shields/crosses/crosses_right.overlay).
+ * Trackball: normal pointer on Base and Mouse, 2-axis scroll on Lower, slow "snipe" pointer on Raise,
+ * all rotated -45 deg (driver `scroll-layers`/`snipe-layers` in crosses_right.overlay; see D9/D10).
  */
 
 #include <behaviors.dtsi>
@@ -323,6 +326,8 @@ Notes:
   orientation on Base is unchanged.
 
 ## Appendix C — Test checklist (with the user)
+
+User confirmed overall on 2026-10-24 (not item by item); boxes left as a reusable checklist.
 
 - [ ] Both halves connect; ZMK Studio connects to the right half; Studio unlock works (Mouse layer, N).
 - [ ] Base outer keys: `` ` `` / `~` (with Shift), Esc, left Alt, `_`, `'` / `"`, right Alt (Alt-Tab works).

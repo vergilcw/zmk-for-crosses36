@@ -52,9 +52,9 @@ Newest entries go at the top of each section.
   mapper, invert Y and leave X as is to match the stock direction.
 - Driver scroll mode reads with divisor 1 and tick 24; pointer mode divides by `CPI_DIVIDOR` (4). In pointer
   mode one wheel step ≈ 24/4 = 6 counts → `zip_scroll_scaler 1 6`.
-- Implemented 2026-10-23 in `crosses_right.overlay` (`lower_vscroll` on layer 1, `raise_hscroll` on layer 2).
+- Implemented 2026-10-23 in `crosses_right.overlay` (`lower_vscroll` on layer 1, `raise_hscroll` on layer 2; later removed, see next section).
   Compiles: CI run `39998744897` (2026-10-23) is green, and the right half's final devicetree (printed in the
-  build log) contains both override nodes with the expected `input-processors`. *Not yet tested on hardware.*
+  build log) contains both override nodes with the expected `input-processors`. Never flashed: replaced by driver layers before the first hardware test.
 
 ## Trackball rotation & driver layers (2026-10-23)
 
@@ -74,9 +74,16 @@ Newest entries go at the top of each section.
 - `build-user-config.yml@v0.3.0` passes `-DZMK_EXTRA_MODULES=$GITHUB_WORKSPACE` when `zephyr/module.yml` exists at
   the repo root; ours points `cmake`/`kconfig`/`dts_root` at `modules/zmk-pmw3610-driver`.
 
+## Hardware verification
+
+- **2026-10-24** — Right half flashed with `crosses_36_right.uf2` from CI run `40051120233` (`-45` rotation,
+  Lower = scroll, Raise = snipe); it re-enumerated as `ZMK_Project_Crosses_36`. The user reported it works well.
+  Defaults kept: `CONFIG_PMW3610_ROTATION_DEG=-45`, `SCROLL_TICK=24`, `CPI=1600/4`, `SNIPE_CPI=400/4`.
+  The left half was flashed 2026-10-23 and is unchanged. *Per-item checklist results were not recorded.*
+
 ## Decisions
 
-See `docs/plan.md` § Decisions (D1–D8). Summary of user-confirmed ones:
+See `docs/plan.md` § Decisions (D1–D10). Summary of user-confirmed ones:
 
 - **D2 (2026-10-22)** — Left Alt on both bottom-pinky outer keys.
 - **D5 (2026-10-23)** — Q+W → Esc combo dropped.
