@@ -149,7 +149,9 @@ git commit -m "Add agent instructions and plan"
       −45 maps a roll toward 10:30 to straight up; Q14 constants match exact cos/sin; slow motion kept.
 - [x] `crosses_right.overlay`: `scroll-layers = <1>`, `snipe-layers = <2>`, listener overrides removed.
       `crosses_right.conf`: `CONFIG_PMW3610_ROTATION_DEG=-45`.
-- [ ] Push (ask), CI green, flash right half only (ask), test with the user (Appendix C).
+- [x] Push (ask), CI green: run `40051120233`; log shows `pmw3610.c` built from the in-repo module
+      (`modules/crosses36-pmw3610`), `CONFIG_PMW3610_ROTATION_DEG=-45`, `scroll-layers = <1>`, `snipe-layers = <2>`.
+- [ ] Flash right half only (ask), test with the user (Appendix C).
 
 ## Phase 4 — Docs, images, build matrix
 
