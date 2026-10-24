@@ -19,6 +19,32 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 
+#if CONFIG_PMW3610_ROTATION_DEG != 0
+// cos/sin of the rotation angle in Q14, folded to constants at compile time (Taylor series, error
+// < 1e-6 for |angle| <= 90 degrees), so no floating point at runtime. The Kconfig angle is negated:
+// negative = counterclockwise turn of the ball's "up" direction, which is a positive rotation in
+// the y-down screen coordinates used below.
+#define PMW3610_ROT_ONE 16384
+#define PMW3610_ROT_R (-(double)CONFIG_PMW3610_ROTATION_DEG * 3.14159265358979323846 / 180.0)
+#define PMW3610_ROT_R2 (PMW3610_ROT_R * PMW3610_ROT_R)
+#define PMW3610_ROT_COS                                                                            \
+    (1.0 - PMW3610_ROT_R2 / 2.0 *                                                                  \
+               (1.0 - PMW3610_ROT_R2 / 12.0 *                                                      \
+                          (1.0 - PMW3610_ROT_R2 / 30.0 *                                           \
+                                     (1.0 - PMW3610_ROT_R2 / 56.0 *                                \
+                                                (1.0 - PMW3610_ROT_R2 / 90.0)))))
+#define PMW3610_ROT_SIN                                                                            \
+    (PMW3610_ROT_R *                                                                               \
+     (1.0 - PMW3610_ROT_R2 / 6.0 *                                                                 \
+                (1.0 - PMW3610_ROT_R2 / 20.0 *                                                     \
+                           (1.0 - PMW3610_ROT_R2 / 42.0 *                                          \
+                                      (1.0 - PMW3610_ROT_R2 / 72.0 *                               \
+                                                 (1.0 - PMW3610_ROT_R2 / 110.0))))))
+#define PMW3610_ROT_ROUND(v) ((v) >= 0 ? (int32_t)((v) + 0.5) : (int32_t)((v) - 0.5))
+static const int32_t pmw3610_rot_cos = PMW3610_ROT_ROUND(PMW3610_ROT_COS * PMW3610_ROT_ONE);
+static const int32_t pmw3610_rot_sin = PMW3610_ROT_ROUND(PMW3610_ROT_SIN * PMW3610_ROT_ONE);
+#endif
+
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
 // delayable work is defined for this purpose           //
@@ -625,10 +651,11 @@ static int pmw3610_report_data(const struct device *dev) {
         return err;
     }
 
-    int16_t raw_x =
-        TOINT16((buf[PMW3610_X_L_POS] + ((buf[PMW3610_XY_H_POS] & 0xF0) << 4)), 12) / dividor;
-    int16_t raw_y =
-        TOINT16((buf[PMW3610_Y_L_POS] + ((buf[PMW3610_XY_H_POS] & 0x0F) << 8)), 12) / dividor;
+    // Division by dividor is deferred until after orientation/inversion/rotation. Orientation and
+    // inversion only swap/negate, and C division truncates toward zero, so with no rotation the
+    // result is identical to dividing here.
+    int16_t raw_x = TOINT16((buf[PMW3610_X_L_POS] + ((buf[PMW3610_XY_H_POS] & 0xF0) << 4)), 12);
+    int16_t raw_y = TOINT16((buf[PMW3610_Y_L_POS] + ((buf[PMW3610_XY_H_POS] & 0x0F) << 8)), 12);
 
     int16_t x;
     int16_t y;
@@ -654,6 +681,24 @@ static int pmw3610_report_data(const struct device *dev) {
     if (IS_ENABLED(CONFIG_PMW3610_INVERT_Y)) {
         y = -y;
     }
+
+#if CONFIG_PMW3610_ROTATION_DEG != 0
+    if (input_mode_changed) {
+        data->rot_rem_x = 0;
+        data->rot_rem_y = 0;
+    }
+    // Screen coordinates (y points down). Keep the sub-count remainder so slow movement isn't lost.
+    const int32_t rot_div = PMW3610_ROT_ONE * dividor;
+    int32_t acc_x = (int32_t)x * pmw3610_rot_cos - (int32_t)y * pmw3610_rot_sin + data->rot_rem_x;
+    int32_t acc_y = (int32_t)x * pmw3610_rot_sin + (int32_t)y * pmw3610_rot_cos + data->rot_rem_y;
+    x = acc_x / rot_div;
+    y = acc_y / rot_div;
+    data->rot_rem_x = acc_x - (int32_t)x * rot_div;
+    data->rot_rem_y = acc_y - (int32_t)y * rot_div;
+#else
+    x /= dividor;
+    y /= dividor;
+#endif
 
 #ifdef CONFIG_PMW3610_SMART_ALGORITHM
     int16_t shutter =

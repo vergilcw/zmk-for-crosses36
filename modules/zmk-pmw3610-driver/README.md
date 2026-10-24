@@ -1,3 +1,9 @@
+> **Vendored copy.** Source: [DoctorWangWang/zmk-pmw3610-driver](https://github.com/DoctorWangWang/zmk-pmw3610-driver)
+> @ `1d9c2c6` (identical to [inorichi/zmk-pmw3610-driver](https://github.com/inorichi/zmk-pmw3610-driver) `main`),
+> MIT per the source headers. Local change: `CONFIG_PMW3610_ROTATION_DEG` (rotate movement by any angle,
+> negative = counterclockwise), applied before the CPI dividor with remainder tracking. Loaded as a Zephyr module
+> via `zephyr/module.yml` at the repo root. See `git log -- modules/zmk-pmw3610-driver` for the diff.
+
 PMW3610 driver implementation for ZMK with at least Zephyr 3.5
 
 This work is based on [ufan's implementation](https://github.com/ufan/zmk/tree/support-trackpad) of the driver.

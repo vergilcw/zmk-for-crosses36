@@ -26,6 +26,11 @@ struct pixart_data {
     int32_t scroll_delta_x;
     int32_t scroll_delta_y;
 
+#if CONFIG_PMW3610_ROTATION_DEG != 0
+    int32_t rot_rem_x;
+    int32_t rot_rem_y;
+#endif
+
 #ifdef CONFIG_PMW3610_POLLING_RATE_125_SW
     int64_t last_poll_time;
     int16_t last_x;

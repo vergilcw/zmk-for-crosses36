@@ -147,6 +147,16 @@ config PMW3610_INVERT_X
 config PMW3610_INVERT_Y
   bool "Invert the Y axis of PMW3610 sensor"
 
+config PMW3610_ROTATION_DEG
+  int "Rotate PMW3610 movement by this many degrees (after orientation and inversion)"
+  default 0
+  range -90 90
+  help
+    Rotates pointer, snipe and scroll movement. Negative values turn the ball's "up" direction
+    counterclockwise (seen from above), positive values clockwise: with -45, rolling the ball
+    toward 10:30 moves the pointer straight up. Applied before the CPI dividor, keeping the
+    sub-count remainder. Added in vergilcw/zmk-for-crosses36 (not upstream).
+
 config PMW3610_INVERT_SCROLL_X
   bool "Invert the X axis of the scroll"
   default PMW3610_INVERT_X
