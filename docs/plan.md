@@ -151,7 +151,8 @@ git commit -m "Add agent instructions and plan"
       `crosses_right.conf`: `CONFIG_PMW3610_ROTATION_DEG=-45`.
 - [x] Push (ask), CI green: run `40051120233`; log shows `pmw3610.c` built from the in-repo module
       (`modules/crosses36-pmw3610`), `CONFIG_PMW3610_ROTATION_DEG=-45`, `scroll-layers = <1>`, `snipe-layers = <2>`.
-- [ ] Flash right half only (ask), test with the user (Appendix C).
+- [x] Flash right half only (2026-10-24: `crosses_36_right.uf2` from run `40051120233`; re-enumerated as `ZMK_Project_Crosses_36`).
+- [ ] Test with the user (Appendix C).
 
 ## Phase 4 — Docs, images, build matrix
 
