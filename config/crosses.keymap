@@ -5,8 +5,8 @@
  * (exported from ZMK Studio 2026-10-10), except: ; is on the home row and ' moves
  * to the outer column, and the Q+W -> Esc combo is dropped. Outer pinky columns are new:
  *   Base L: ` ~ / Esc / Alt    Base R: _ / ' / Alt    other layers: &trans
- * Trackball: vertical-only scroll on Lower, horizontal-only scroll on Raise
- * (input-listener layer overrides in boards/shields/crosses/crosses_right.overlay).
+ * Trackball (PMW3610 driver, boards/shields/crosses/crosses_right.overlay/.conf): pointer on
+ * Base and Mouse, 2-axis scroll on Lower, slow "snipe" pointer on Raise; all rotated -45 deg.
  */
 
 #include <behaviors.dtsi>

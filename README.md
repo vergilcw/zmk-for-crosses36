@@ -28,9 +28,9 @@ differences listed below.
 | Layer | Reach | What's there |
 | --- | --- | --- |
 | **Base** | — | QWERTY, mod-taps on the bottom row (Alt/Shift on Z X . /), thumbs: Tab/Mouse · Bspc/Shift · Esc/Lower — Ret/Ctrl · Space/Raise · Gui |
-| **Lower** | hold left-inner thumb or M | Navigation (Home/arrows/End), media + brightness, F-keys, mouse buttons on right thumbs, USB/BT toggle. **Trackball scrolls vertically.** |
-| **Raise** | hold right-middle thumb | Symbols on the left, numpad on the right, media prev/next. **Trackball scrolls horizontally.** |
-| **Mouse** | hold left-outer thumb | Bluetooth profiles 0–4, mouse buttons, brackets/parens, Studio unlock. Trackball in slow "sniper" mode. |
+| **Lower** | hold left-inner thumb or M | Navigation (Home/arrows/End), media + brightness, F-keys, mouse buttons on right thumbs, USB/BT toggle. **Trackball scrolls.** |
+| **Raise** | hold right-middle thumb | Symbols on the left, numpad on the right, media prev/next. **Trackball in slow "snipe" mode.** |
+| **Mouse** | hold left-outer thumb | Bluetooth profiles 0–4, mouse buttons, brackets/parens, Studio unlock |
 
 **Differences from the daily driver:**
 
@@ -38,20 +38,24 @@ differences listed below.
   (passed through to Base on every other layer).
 - `;` is on the right home row and `'` moves to the outer column.
 - No Q+W → Esc combo (Esc has its own key).
-- Single trackball: the scroll axis is chosen by layer instead of by a second trackball.
+- Single trackball: Lower turns it into a scroll wheel instead of using a second trackball.
 
 ### Trackball
 
 | Layer | Trackball |
 | --- | --- |
 | Base | Pointer |
-| Lower | Vertical scroll only |
-| Raise | Horizontal scroll only |
-| Mouse | Slow pointer (sniper) |
+| Lower | Scroll (both axes) |
+| Raise | Slow pointer (snipe, ¼ speed) |
+| Mouse | Pointer |
 
-Scrolling uses ZMK input-listener layer overrides in
-[`crosses_right.overlay`](config/boards/shields/crosses/crosses_right.overlay). Pointer speed and orientation are
-`CONFIG_PMW3610_*` settings in [`crosses_right.conf`](config/boards/shields/crosses/crosses_right.conf).
+All trackball movement is rotated **45° counterclockwise**: rolling toward 10:30 moves the pointer
+straight up, to suit the hand angle. The layers are set with `scroll-layers` / `snipe-layers` in
+[`crosses_right.overlay`](config/boards/shields/crosses/crosses_right.overlay). Speed, orientation and rotation
+are `CONFIG_PMW3610_*` settings in [`crosses_right.conf`](config/boards/shields/crosses/crosses_right.conf).
+
+The PMW3610 driver is vendored in [`modules/zmk-pmw3610-driver`](modules/zmk-pmw3610-driver) and patched to add
+`CONFIG_PMW3610_ROTATION_DEG` (any angle from −90 to 90; negative = counterclockwise).
 
 ---
 
@@ -91,6 +95,6 @@ Edit `config/crosses.keymap` and push. GitHub Actions builds the firmware and re
 - [HeeTuic](https://github.com/HeeTuic) — modified Crosses PCB, original firmware
   ([zmk-for-crosses](https://github.com/HeeTuic/zmk-for-crosses))
 - [Good-Great-Grand-Wonderful](https://github.com/Good-Great-Grand-Wonderful/crosses) — Crosses design
-- [DoctorWangWang](https://github.com/DoctorWangWang/zmk-pmw3610-driver) — PMW3610 driver
+- [inorichi](https://github.com/inorichi/zmk-pmw3610-driver) / [DoctorWangWang](https://github.com/DoctorWangWang/zmk-pmw3610-driver) — PMW3610 driver
 - [caksoylar](https://github.com/caksoylar/keymap-drawer) — keymap-drawer
 - The [ZMK](https://github.com/zmkfirmware/zmk) project

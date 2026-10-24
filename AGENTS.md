@@ -24,7 +24,7 @@ HeeTuic modified PCB, two nice!nano v2, one PMW3610 sensor).
 | ZMK | `v0.3` branch (Zephyr 3.5) | pinned commit on `main` (Zephyr 4.1) |
 | Shield definition | **in-repo** `config/boards/shields/crosses/` (edit directly) | external module `HeeTuic/cb-zmk-keebs` |
 | Board name in `build.yaml` | `nice_nano_v2` | `nice_nano` |
-| Trackball driver | `DoctorWangWang/zmk-pmw3610-driver@main`, compatible `pixart,pmw3610`, Kconfig-tuned (`CONFIG_PMW3610_*`), DT props `scroll-layers`, `snipe-layers`, `automouse-layer` | `efogdev` driver |
+| Trackball driver | **vendored** `modules/zmk-pmw3610-driver` (from `DoctorWangWang/zmk-pmw3610-driver@1d9c2c6`, loaded via root `zephyr/module.yml`, patched with `CONFIG_PMW3610_ROTATION_DEG`), compatible `pixart,pmw3610`, Kconfig-tuned (`CONFIG_PMW3610_*`), DT props `scroll-layers`, `snipe-layers`, `automouse-layer` | `efogdev` driver |
 | Physical layout | `crosses_layout` (42 keys) set in `crosses.dtsi` `chosen` — the keymap must **not** set `zmk,physical-layout` | keymap chooses `gggw_crosses_36_layout` |
 | keymap-drawer layout | `config/crosses.json` (auto-picked by the draw workflow), output to `img/` | `config/info.json`, output to `keymap-drawer/` |
 | Keyboard name | `Crosses 36` (`config/crosses.conf`) | `Crosses BT` |

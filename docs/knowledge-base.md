@@ -33,7 +33,7 @@ Newest entries go at the top of each section.
 - `build.yaml` board is `nice_nano_v2`; `artifact-name` (supported by `build-user-config.yml@v0.3.0`) names the
   outputs `crosses_36_left` / `crosses_36_right`, distinct from the daily driver's `crosses_35_*`.
 
-## Trackball scrolling (verified against source 2026-10-23)
+## Trackball scrolling via ZMK overrides (2026-10-23; superseded by driver layers, see below)
 
 - The driver's `scroll-layers` mode scrolls **both** axes (whichever accumulated delta exceeds
   `CONFIG_PMW3610_SCROLL_TICK` first) and can't lock an axis (`src/pmw3610.c` `pmw3610_report_data`).
@@ -56,6 +56,24 @@ Newest entries go at the top of each section.
   Compiles: CI run `39998744897` (2026-10-23) is green, and the right half's final devicetree (printed in the
   build log) contains both override nodes with the expected `input-processors`. *Not yet tested on hardware.*
 
+## Trackball rotation & driver layers (2026-10-23)
+
+- The driver picks scroll/snipe/move from `zmk_keymap_highest_layer_active()` against DT `scroll-layers` /
+  `snipe-layers`; snipe changes the sensor CPI (`SNIPE_CPI` 400, dividor 4 → ¼ of normal 1600/4).
+- Lower+Raise can't be held together on this keymap: on Lower the Raise thumb is `&mkp RCLK`, on Raise the Lower
+  thumb is `&kp DEL` (whichever layer is active when the second thumb is pressed decides its binding).
+- ZMK v0.3 input processors/overrides depend on layers only, not on modifiers.
+- Rotation candidates rejected: `hsgw/zmk-feature-sensor_rotation@e1a0186` rotates each axis event using the
+  other axis's value from the *previous* report (stateful skew on diagonals) and truncates per event;
+  `efogdev/zmk-input-processor-rotate-plane` needs `zmk_runtime_config` (efogdev) and targets newer ZMK.
+- Rotation implemented in the vendored driver (`modules/zmk-pmw3610-driver`, `CONFIG_PMW3610_ROTATION_DEG`):
+  after orientation/inversion, before the dividor, Q14 integer math with compile-time Taylor-series cos/sin and
+  per-axis remainders (reset on mode change). With the option at 0 the code path is the original.
+  Host-side test (gcc, the patched lines extracted verbatim): −45 → cos = sin = 11585 (exact 11585.2); a roll
+  toward 10:30 gives (0, −1060) over 1000 reports vs ideal (0, −1061); slow (1,0)/4 motion is no longer lost.
+- `build-user-config.yml@v0.3.0` passes `-DZMK_EXTRA_MODULES=$GITHUB_WORKSPACE` when `zephyr/module.yml` exists at
+  the repo root; ours points `cmake`/`kconfig`/`dts_root` at `modules/zmk-pmw3610-driver`.
+
 ## Decisions
 
 See `docs/plan.md` § Decisions (D1–D8). Summary of user-confirmed ones:
@@ -64,6 +82,8 @@ See `docs/plan.md` § Decisions (D1–D8). Summary of user-confirmed ones:
 - **D5 (2026-10-23)** — Q+W → Esc combo dropped.
 - **D8 (2026-10-23)** — `;` on the right home row, `'` on the right outer column (a deliberate deviation from the
   daily driver).
+- **D9/D10 (2026-10-23)** — Lower = 2-axis scroll, Raise = snipe, Mouse = normal; all movement rotated −45°
+  (negative = counterclockwise, user's convention).
 
 ## Tooling
 

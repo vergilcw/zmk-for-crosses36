@@ -19,9 +19,9 @@ Make the secondary keyboard (Crosses 3x6+3, single trackball on the right half) 
    | Right pinky middle (pos 23) | quote | `&kp SQT` (swapped with `;`, see D8) |
    | Right pinky bottom (pos 35) | Alt | `&kp LALT` (see decision D2) |
 
-2. **Trackball behaviour by layer:** normal pointer on Base, **vertical-only scroll while Lower is
-   held**, **horizontal-only scroll while Raise is held**. Sniper mode stays on the Mouse layer
-   (upstream default, see D4).
+2. **Trackball behaviour by layer** (revised 2026-10-23, see D9/D10): normal pointer on Base and
+   Mouse, **2-axis scroll while Lower is held**, **snipe (slow pointer) while Raise is held**; all
+   movement rotated 45° counterclockwise (`CONFIG_PMW3610_ROTATION_DEG=-45`).
 
 Out of scope for this task: mod-tap/hold-tap tuning, connectivity work, anything on the daily driver.
 
@@ -59,14 +59,25 @@ Out of scope for this task: mod-tap/hold-tap tuning, connectivity work, anything
 - **D3 — Drop upstream's global `&lt` override** (`tapping-term 200, balanced, quick-tap 150`) so
   layer-taps feel identical to the daily driver (which uses stock `&lt`). Typing tuning is a later,
   shared task for both keyboards.
-- **D4 — Keep driver sniper on the Mouse layer** (`snipe-layers = <3>`, upstream default).
+- **D4 — ~~Keep driver sniper on the Mouse layer~~ Superseded by D9** (user, 2026-10-23): Mouse keeps a normal pointer.
 - **D5 — ~~Keep the Q+W → Esc combo~~ Dropped** (user, 2026-10-23): Esc has a dedicated key now.
 - **D6 — Drop the unused `&as` (auto_shift) hold-tap** from the daily-driver keymap; nothing binds it.
-- **D7 — Scroll implemented with ZMK input-listener layer overrides**, not the driver's
+- **D7 — ~~Scroll implemented with ZMK input-listener layer overrides~~ Superseded by D9**, not the driver's
   `scroll-layers` (which can't lock an axis). Fallback if overrides misbehave: driver `scroll-layers`
   for free 2-axis scroll on Lower/Raise.
 - **D8 — `;` on the home row (pos 22), `'` on the outer column (pos 23)** (user, 2026-10-23).
   Deliberate deviation from the daily driver, which has `'` at that home-row position.
+- **D9 — Trackball layers via the driver** (user, 2026-10-23): `scroll-layers = <1>` (Lower, both axes;
+  the user dropped axis-locked scroll), `snipe-layers = <2>` (Raise), Mouse normal. The ZMK input-listener
+  overrides (Appendix B) were removed. Alternatives considered and rejected: Shift+Lower for horizontal
+  scroll (v0.3 processors can't see modifiers; Shift+HWHEEL is host-dependent); Lower+Raise (the other
+  thumb is `RCLK`/`DEL` on those layers, so the combination can't be reached).
+- **D10 — Rotate all trackball movement 45° CCW in the vendored driver** (user, 2026-10-23): ZMK v0.3 has
+  no rotation processor and per-axis events can't be rotated correctly by a stateless processor
+  (`hsgw/zmk-feature-sensor_rotation` pairs each axis with the *previous* report's other axis;
+  `efogdev/zmk-input-processor-rotate-plane` needs efogdev's runtime-config module and newer ZMK). The driver
+  is vendored in `modules/zmk-pmw3610-driver` with `CONFIG_PMW3610_ROTATION_DEG` (negative = CCW, the user's
+  preferred convention), applied to raw counts before the dividor with remainder tracking.
 
 ## Inbox
 
@@ -119,7 +130,7 @@ git commit -m "Add agent instructions and plan"
       (2026-10-23: all 4 layers match binding-for-binding; keymap-drawer parses it. Later the same day
       the user swapped `;`/`'` (D8) and dropped the combo (D5) — the only intended differences.)
 
-## Phase 3 — Trackball scroll layers
+## Phase 3 — Trackball scroll layers (superseded by Phase 3b)
 
 - [x] Edit `config/boards/shields/crosses/crosses_right.overlay` per **Appendix B**: add the two includes
       and the `lower_vscroll` / `raise_hscroll` child nodes inside the existing `trackball_listener`.
@@ -129,6 +140,16 @@ git commit -m "Add agent instructions and plan"
       `input_transform.h`, listener child-binding `layers`/`process-next`/`input-processors` — and the
       driver @`1d9c2c6` sign/divisor logic. Not compiled yet; CI is the first build.)
 - [x] Don't change `crosses_right.conf` yet; tune only after hardware testing (Appendix D).
+
+## Phase 3b — Rotation + driver layers (2026-10-23, after first hardware test)
+
+- [x] Vendor `DoctorWangWang/zmk-pmw3610-driver@1d9c2c6` into `modules/zmk-pmw3610-driver` (pristine commit),
+      load it via root `zephyr/module.yml`, drop it from `config/west.yml`.
+- [x] Add `CONFIG_PMW3610_ROTATION_DEG` to the driver; host-side unit test of the exact patched lines:
+      −45 maps a roll toward 10:30 to straight up; Q14 constants match exact cos/sin; slow motion kept.
+- [x] `crosses_right.overlay`: `scroll-layers = <1>`, `snipe-layers = <2>`, listener overrides removed.
+      `crosses_right.conf`: `CONFIG_PMW3610_ROTATION_DEG=-45`.
+- [ ] Push (ask), CI green, flash right half only (ask), test with the user (Appendix C).
 
 ## Phase 4 — Docs, images, build matrix
 
@@ -254,12 +275,11 @@ git commit -m "Add agent instructions and plan"
 Notes:
 - Lower is held with the left-inner thumb (`Esc`/Lower, pos 38) — the natural way to scroll with the
   right hand on the ball. `&lt LOWER M` also works but occupies a right-hand finger.
-- Raise is the right-middle thumb (`Space`/Raise, pos 40), so horizontal scroll uses the right thumb
-  for the layer and the right hand on the ball. If that's awkward in practice, log it in the Inbox.
+- Raise is the right-middle thumb (`Space`/Raise, pos 40); holding it gives the slow snipe pointer.
 - Oddities inherited from the daily driver (duplicate F-keys on Lower, `LS(KP_PLUS)`, shifted media
   keys, `&bt BT_CLR` on Raise) are intentional parity — don't "fix" them here.
 
-## Appendix B — `crosses_right.overlay` change
+## Appendix B — `crosses_right.overlay` change (historical; removed in Phase 3b)
 
 Replace the existing `/ { trackball_listener { … }; };` block at the bottom with:
 
@@ -304,22 +324,20 @@ Notes:
 - [ ] Both halves connect; ZMK Studio connects to the right half; Studio unlock works (Mouse layer, N).
 - [ ] Base outer keys: `` ` `` / `~` (with Shift), Esc, left Alt, `_`, `'` / `"`, right Alt (Alt-Tab works).
 - [ ] Inner block behaves exactly like the daily driver (spot-check each layer against the image).
-- [ ] Base: pointer moves normally, same speed/orientation as before flashing.
-- [ ] Hold Lower: ball scrolls **only vertically**; diagonal rolls don't scroll sideways.
-- [ ] Hold Raise: ball scrolls **only horizontally** (test in a wide spreadsheet / browser page).
-- [ ] Scroll direction matches the user's preference on both axes; speed comfortable.
-- [ ] Hold Mouse: sniper (slow pointer) still works; mouse buttons work.
+- [ ] Base: pointer moves at the same speed as before; rolling toward 10:30 moves it straight up
+      (rotation feels natural, else adjust `CONFIG_PMW3610_ROTATION_DEG`).
+- [ ] Hold Lower: ball scrolls on both axes, direction and speed comfortable.
+- [ ] Hold Raise: slow snipe pointer.
+- [ ] Hold Mouse: normal pointer speed; mouse buttons work.
 - [ ] `;` is on the right home row (pinky), `'` / `"` on the outer column next to it.
 
 ## Appendix D — Tuning knobs
 
 | Want | Change |
 | --- | --- |
-| Slower scroll | Raise the divisor: `<&zip_scroll_scaler 1 8>` (or 10, 12…) |
-| Faster scroll | Lower the divisor: `<&zip_scroll_scaler 1 4>` |
-| Flip vertical direction | Remove `<&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>` from `lower_vscroll` |
-| Flip horizontal direction | Add `<&zip_scroll_transform INPUT_TRANSFORM_X_INVERT>` to `raise_hscroll` (after the mapper) |
-| Smoother (hi-res) scroll | `CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y` in `crosses_right.conf`; then re-tune the divisor (expect a much smaller divisor or `1 1`). Host support varies — test on each OS. |
+| Rotation | `CONFIG_PMW3610_ROTATION_DEG` in `crosses_right.conf` (−90…90, negative = counterclockwise) |
+| Slower / faster scroll | Raise / lower `CONFIG_PMW3610_SCROLL_TICK` (stock 24) |
+| Flip scroll direction | `CONFIG_PMW3610_INVERT_SCROLL_Y=y` and/or `CONFIG_PMW3610_INVERT_SCROLL_X=n` (X defaults to `INVERT_X`, which is `y`) |
 | Pointer speed | `CONFIG_PMW3610_CPI` / `CONFIG_PMW3610_CPI_DIVIDOR` in `crosses_right.conf` (or host-side pointer speed) |
 | Sniper speed | `CONFIG_PMW3610_SNIPE_CPI` / `CONFIG_PMW3610_SNIPE_CPI_DIVIDOR` |
 | Choppy pointer | Consider removing `CONFIG_PMW3610_POLLING_RATE_125_SW` (software 125 Hz) — test battery impact |
